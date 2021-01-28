@@ -22,7 +22,6 @@ class Owners(commands.Cog):
     @commands.command(name='generate', help='me only', aliases=['gen'])
     async def generatemoney(self, ctx, amount):
         if not ctx.author.id in owners:
-            print(ctx.author.id)
             return
         
         await self.open_account(ctx.author)
