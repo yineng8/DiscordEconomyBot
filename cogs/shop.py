@@ -18,7 +18,10 @@ class Shop(commands.Cog):
     async def shop(self, ctx):
         mainshop = [{"name":"Watch","price":100,"description":"Time"},
                     {"name":"Laptop","price":1000,"description":"Work"},
-                    {"name":"Car","price":10000,"description":"Drive"}]
+                    {"name":"Car","price":10000,"description":"Drive"},
+                    {"name":"House","price":100000,"description":"Live"},
+                    {"name":"Boat","price":1000000,"description":"Sail"},
+                    {"name":"Plane","price":10000000,"description":"Fly"}]
 
 
         em = discord.Embed(title = "Shop")
@@ -35,9 +38,12 @@ class Shop(commands.Cog):
         await shop_display.add_reaction("⌚")
         await shop_display.add_reaction("💻")
         await shop_display.add_reaction("🚗")
+        await shop_display.add_reaction("🏠")
+        await shop_display.add_reaction("🛥️")
+        await shop_display.add_reaction("🛩️")
 
         def check(reaction, user):
-            return user == ctx.message.author and str(reaction.emoji) in ['⌚', '💻', '🚗']
+            return user == ctx.message.author and str(reaction.emoji) in ['⌚', '💻', '🚗', '🏠', '🛥️', '🛩️']
 
 
         try:
@@ -53,6 +59,15 @@ class Shop(commands.Cog):
 
             elif reaction.emoji == '🚗':
                 await self.buy(ctx, "car", amount = 1)
+
+            elif reaction.emoji == '🏠':
+                await self.buy(ctx, "house", amount = 1)
+            
+            elif reaction.emoji == '🛥️':
+                await self.buy(ctx, "boat", amount = 1)
+            
+            elif reaction.emoji == '🛩️':
+                await self.buy(ctx, "plane", amount = 1)
 
 
         except asyncio.TimeoutError:
@@ -103,7 +118,10 @@ class Shop(commands.Cog):
     async def buy_this(self, user, item_name, amount):
         mainshop = [{"name":"Watch","price":100,"description":"Time"},
                     {"name":"Laptop","price":1000,"description":"Work"},
-                    {"name":"Car","price":10000,"description":"Drive"}]
+                    {"name":"Car","price":10000,"description":"Drive"},
+                    {"name":"House","price":100000,"description":"Live"},
+                    {"name":"Boat","price":1000000,"description":"Sail"},
+                    {"name":"Plane","price":10000000,"description":"Fly"}]
 
         item_name = item_name.lower()
         name_ = None
