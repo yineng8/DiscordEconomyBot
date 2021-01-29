@@ -13,28 +13,64 @@ class Owners(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    async def isowner(self, isid):
-        for id in owners:
-            if isid == id:
-                return True
-        return False
+    async def cog_check(self, ctx):
+        if ctx.author.id in owners:
+            return True
 
-    @commands.command(name='generate', help='me only', aliases=['gen'])
-    async def generatemoney(self, ctx, amount):
-        if not ctx.author.id in owners:
-            return
-        
-        await self.open_account(ctx.author)
+    async def cog_command_error(self, ctx, error):
+        print('Error in {0.command.qualified_name}: {1}'.format(ctx, error))
+        print(f'invalid id: {ctx.author.id}')
+        await ctx.send("You cannot access this command.")
 
+    @commands.command(name='reset', aliases=['r'])
+    async def resetuser(self, ctx, member: discord.Member):
+        await self.open_account(member)
         users = await self.get_bank_data()
 
-        user = ctx.author
+        users[str(member.id)]["wallet"] = 0
+        users[str(member.id)]["bank"] = 0
+        users.pop("bag", None)
+        
+        with open("mainbank.json", "w") as f:
+            json.dump(users, f)
+
+        await ctx.send(f"You reset {member}")
+
+    @resetuser.error
+    async def resetuser_error(self, ctx, error):
+        if isinstance(error, commands.BadArgument):
+            await ctx.send("Please @ a user")
+
+    @commands.command(name='resetall', aliases=['rall'])
+    async def resetall(self, ctx):
+        
+        await self.open_account(ctx.author)
+        users = await self.get_bank_data()
+        for user in users.values():
+            user['wallet'] = 0
+            user['bank'] = 0
+            user.pop("bag", None)
+        
+        with open("mainbank.json", "w") as f:
+            json.dump(users, f)
+
+    @commands.command(name='generate', help='me only', aliases=['gen'])
+    async def generatemoney(self, ctx, amount, member: discord.Member = None):
+        if member == None:
+            await self.open_account(ctx.author)
+            users = await self.get_bank_data()
+            user = ctx.author
+        else:
+            await self.open_account(member)
+            users = await self.get_bank_data()
+            user = member
 
         earnings = int(amount)
 
         await ctx.send(f"You got {earnings}")
 
         users[str(user.id)]["wallet"] += earnings
+        users[str(user.id)]["bank"] += earnings
 
         with open("mainbank.json", "w") as f:
             json.dump(users, f)
