@@ -22,14 +22,62 @@ class Casino(commands.Cog):
         for em in emojiletter:
             await msg.add_reaction(em)
 
+
+
+
+
+
+
+
+
+
     @commands.command(name='coinflip', help='Simulates flipping a coin.', aliases=['cf'])
     async def cflip(self, ctx):
 
-        side = ["heads", "tails"]
-        coin = [
-            str(random.choice(side))
-        ]
-        await ctx.send(', '.join(coin))
+        flag = True
+
+        em = discord.Embed(title = "CoinFlip")
+        shop_display = await ctx.send (embed = em)
+
+        await shop_display.add_reaction("🇭")
+        await shop_display.add_reaction("🇹")
+
+        def check(reaction, user):
+            return user == ctx.message.author and str(reaction.emoji) in ['🇭', '🇹']
+
+
+        try:
+
+            reaction, self.user = await self.bot.wait_for('reaction_add', timeout=30, check=check)
+
+            if reaction.emoji == '🇭':
+                flag = True
+
+            elif reaction.emoji == '🇹':
+                flag = False
+
+
+            side = ["heads", "tails"]
+            coin = [
+                str(random.choice(side))
+            ]
+            
+            
+            if (coin == ['heads']) and (flag == True):
+                await ctx.send('you win')
+            
+
+            elif (coin == ['tails']) and (flag == False):
+                await ctx.send('you win')
+            
+            else:
+                await ctx.send('you lose')
+
+        except asyncio.TimeoutError:
+            await ctx.send("Timed out")
+
+
+
 
     @commands.command(name='rolldice', help='Simulates rolling dice.')
     async def roll(self, ctx):

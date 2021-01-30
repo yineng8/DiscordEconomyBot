@@ -48,7 +48,7 @@ class Shop(commands.Cog):
 
         try:
 
-            reaction, self.user = await self.bot.wait_for('reaction_add', timeout=10, check=check)
+            reaction, self.user = await self.bot.wait_for('reaction_add', timeout=30, check=check)
 
             if reaction.emoji == '⌚':
 
